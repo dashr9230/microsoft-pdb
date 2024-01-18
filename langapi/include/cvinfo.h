@@ -3373,7 +3373,7 @@ typedef struct ENVBLOCKSYM {
     unsigned short  reclen;     // Record length
     unsigned short  rectyp;     // S_ENVBLOCK
     struct {
-        unsigned char  rev              : 1;    // reserved
+        unsigned char  fEC              : 1;    // reserved
         unsigned char  pad              : 7;    // reserved, must be 0
     } flags;
     unsigned char   rgsz[1];    // Sequence of zero-terminated strings
