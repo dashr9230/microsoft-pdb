@@ -435,6 +435,41 @@ typedef BOOL (PDBCALL *PfnPDBCopyFilterStreamNames)(
     const wchar_t * szStream
     );
 
+// Missing one(s)
+//
+typedef BOOL (PDBCALL *PfnPDBCopyFilterPdbMappings)(
+    void *          pvClientContext,
+    DWORD *         a2,
+    wchar_t **      a3,
+    wchar_t **      a4
+    );
+
+typedef BOOL (PDBCALL *PfnPDBCopyReportProgress)(
+    void *          pvClientContext,
+    USHORT          a2,
+    ULONG           a3
+    );
+
+typedef BOOL (PDBCALL *PfnPDBCopyFilterModTypes)(
+    void *          pvClientContext,
+    USHORT          a2,
+    DWORD *         a3,
+    BYTE **         a4
+    );
+
+typedef BOOL (PDBCALL *PfnPDBCopyFilterCustomModSyms)(
+    void *          pvClientContext,
+    USHORT          a2,
+    DWORD           a3,
+    DWORD *         a4,
+    BYTE **         a5
+    );
+
+typedef BOOL (PDBCALL *PfnPDBCopyReportMissingPDB)(
+    void *          pvClientContext,
+    const wchar_t * a2
+    );
+
 enum DBGTYPE {
     dbgtypeFPO,
     dbgtypeException,   // deprecated
