@@ -246,6 +246,7 @@ enum PDBErrors {
     EC_BAD_CACHE_PATH,              // bad cache location specified with symsrv
     EC_CACHE_FULL,                  // symsrv cache is full
     EC_TOO_MANY_MOD_ADDTYPE,        // Addtype is called more then once per mod
+    EC_MINI_PDB,
     EC_MAX
 };
 
@@ -388,6 +389,7 @@ enum {
     copyKeepAnnotation      = 0x00000004,   // keep S_ANNOTATION symbols, filtering on the first string
     copyKeepAnnotation2     = 0x00000008,   // keep S_ANNOTATION symbols, filtering on both the first and last strings
     copyRemoveNamedStream   = 0x00000010,   // remove named stream only
+    copyCustomModSyms       = 0x00000020,
 };
 
 // PDBCopy callback signatures and function pointer types for PDB::CopyTo2 and CopyToW2
@@ -396,6 +398,12 @@ enum PCC {
     pccFilterPublics,
     pccFilterAnnotations,
     pccFilterStreamNames,
+
+    pccFilterCustomModSyms,
+    pccFilterModTypes,
+    pccFilterPdbMappings,
+    pccReportMissingPDB,
+    pccReportProgress,
 };
 
 #if !defined(__cplusplus)
