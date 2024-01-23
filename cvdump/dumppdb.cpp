@@ -39,7 +39,7 @@ bool fUtf8Symbols;
 #define precondition    dassert
 #define postcondition   dassert
 
-#include "map_t.h"
+//#include "map_t.h"
 
 DWORD dwMachine;
 extern WORD CVDumpMachineType;
@@ -122,10 +122,10 @@ public:
     }
 };
 
-typedef HashClass<CWsz,hcCast>      HcWsz;
-typedef Map<CWsz, BYTE, HcWsz>      FileMap;
-typedef EnumMap<CWsz, BYTE, HcWsz>  EnumFileMap;
-typedef Array<CWsz>                 RgCWsz;
+//typedef HashClass<CWsz,hcCast>      HcWsz;
+//typedef Map<CWsz, BYTE, HcWsz>      FileMap;
+//typedef EnumMap<CWsz, BYTE, HcWsz>  EnumFileMap;
+//typedef Array<CWsz>                 RgCWsz;
 
 void DumpGSI(GSI *pgsi)
 {
