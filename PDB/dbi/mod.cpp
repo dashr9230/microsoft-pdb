@@ -27,7 +27,8 @@ static void setDSRError(PDB1 * ppdb1, DSR_EC ec) {
 // Declarations of some functions defined in sttosz.cpp
 CB ConvertSymRecFmMBCSToUTF8(PSYM psymSrc, PSYM psymDest, CB cbDest);
 BOOL fConvertSymRecStToSz(PB pbSrc, CB cbSrc, PB pbDest, CB *pcbDest, Array<OffMap>& rgOffMap);
-BOOL fConvertSymRecStToSzWithSig(PB pbSrc, CB cbSrc, CvtSyms& cvtsyms);
+//BOOL fConvertSymRecStToSzWithSig(PB pbSrc, CB cbSrc, CvtSyms& cvtsyms);
+BOOL fConvertSymRecStToSzWithSig(PB pbSrc, CB cbSrc,int xn,CB* cb);
 
 Mod1::Mod1(PDB1* ppdb1_, DBI1* pdbi1_, IMOD imod_)
     : ppdb1(ppdb1_), pdbi1(pdbi1_), ptm(0), imod(imod_), fSymsAdded_S(FALSE),
