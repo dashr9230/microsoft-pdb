@@ -1568,7 +1568,20 @@ typedef struct lfArray {
     unsigned char   data[CV_ZEROLEN];         // variable length data specifying
                                     // size in bytes and name
 } lfArray;
-
+typedef struct lfArraySt{
+    unsigned short  leaf;           // LF_ARRAY
+    CV_typ_t        elemtype;       // type index of element type
+    CV_typ_t        idxtype;        // type index of indexing type
+    unsigned char   data[CV_ZEROLEN];         // variable length data specifying
+                                    // size in bytes and name
+} lfArraySt;
+typedef struct lfArraySz{
+    unsigned short  leaf;           // LF_ARRAY
+    CV_typ_t        elemtype;       // type index of element type
+    CV_typ_t        idxtype;        // type index of indexing type
+    unsigned char   data[CV_ZEROLEN];         // variable length data specifying
+                                    // size in bytes and name
+} lfArraySz;
 typedef struct lfStridedArray {
     unsigned short  leaf;           // LF_STRIDED_ARRAY
     CV_typ_t        elemtype;       // type index of element type
@@ -1638,8 +1651,14 @@ typedef struct lfClass {
     unsigned char   data[CV_ZEROLEN];         // data describing length of structure in
                                     // bytes and name
 } lfClass;
+typedef lfClass lfClassSz;
+typedef lfClass lfClassSt;
 typedef lfClass lfStructure;
+typedef lfClass lfStructureSt;
+typedef lfClass lfStructureSz;
 typedef lfClass lfInterface;
+typedef lfClass lfInterfaceSt;
+typedef lfClass lfInterfaceSz;
 
 //      type record for LF_UNION
 
@@ -1662,7 +1681,8 @@ typedef struct lfUnion {
     unsigned char   data[CV_ZEROLEN];         // variable length data describing length of
                                     // structure and name
 } lfUnion;
-
+typedef lfUnion lfUnionSt;
+typedef lfUnion lfUnionSz;
 
 //      type record for LF_ALIAS
 
@@ -1671,6 +1691,8 @@ typedef struct lfAlias {
     CV_typ_t        utype;          // underlying type
     unsigned char   Name[1];        // alias name
 } lfAlias;
+typedef lfAlias lfAliasSt;
+typedef lfAlias lfAliasSz;
 
 // Item Id is a stricter typeindex which may referenced from symbol stream.
 // The code item always had a name.
@@ -1758,7 +1780,8 @@ typedef struct lfEnum {
     unsigned char   Name[1];        // length prefixed name of enum
 } lfEnum;
 
-
+typedef lfEnum lfEnumSt;
+typedef lfEnum lfEnumSz;
 
 //      Type record for LF_PROCEDURE
 
@@ -1904,6 +1927,18 @@ typedef struct lfDimArray {
     CV_typ_t        diminfo;    // dimension information
     unsigned char   name[1];    // length prefixed name
 } lfDimArray;
+typedef struct lfDimArraySt {
+    unsigned short  leaf;       // LF_DIMARRAY
+    CV_typ_t        utype;      // underlying type of the array
+    CV_typ_t        diminfo;    // dimension information
+    unsigned char   name[1];    // length prefixed name
+} lfDimArraySt;
+typedef struct lfDimArraySz {
+    unsigned short  leaf;       // LF_DIMARRAY
+    CV_typ_t        utype;      // underlying type of the array
+    CV_typ_t        diminfo;    // dimension information
+    unsigned char   name[1];    // length prefixed name
+} lfDimArraySz;
 
 
 
@@ -2080,7 +2115,7 @@ typedef struct lfDefArg {
     unsigned short  leaf;               // LF_DEFARG
     CV_typ_t        type;               // type of resulting expression
     unsigned char   expr[CV_ZEROLEN];   // length prefixed expression string
-} lfDefArg;
+} lfDefArg,lfDefArgSt,lfDefArgSz;
 
 
 
@@ -2144,7 +2179,7 @@ typedef struct lfMethodList_16t {
 typedef struct lfMethodList {
     unsigned short leaf;
     unsigned char  mList[CV_ZEROLEN];         // really a mlMethod type
-} lfMethodList;
+} lfMethodList,lfMethodListSt,lfMethodListSz;
 
 
 
@@ -2563,7 +2598,7 @@ typedef struct lfFriendFcn {
     _2BYTEPAD       pad0;           // internal padding, must be 0
     CV_typ_t        index;          // index to type record of friend function
     unsigned char   Name[1];        // name of friend function
-} lfFriendFcn;
+} lfFriendFcn,lfFriendFcnSt,lfFriendFcnSz;
 
 
 
@@ -2583,7 +2618,7 @@ typedef struct lfMember {
     CV_typ_t        index;          // index of type record for field
     unsigned char   offset[CV_ZEROLEN];       // variable length offset of field followed
                                     // by length prefixed name of field
-} lfMember;
+} lfMember,lfMemberSt,lfMemberSz;
 
 
 
@@ -2601,7 +2636,7 @@ typedef struct lfSTMember {
     CV_fldattr_t    attr;           // attribute mask
     CV_typ_t        index;          // index of type record for field
     unsigned char   Name[1];        // length prefixed name of field
-} lfSTMember;
+} lfSTMember,lfSTMemberSt,lfSTMemberSz;
 
 
 
@@ -2652,7 +2687,7 @@ typedef struct lfMethod {
     unsigned short  count;          // number of occurrences of function
     CV_typ_t        mList;          // index to LF_METHODLIST record
     unsigned char   Name[1];        // length prefixed name of method
-} lfMethod;
+} lfMethod,lfMethodSt,lfMethodSz;
 
 
 
@@ -2675,7 +2710,7 @@ typedef struct lfOneMethod {
     unsigned long  vbaseoff[CV_ZEROLEN];    // offset in vfunctable if
                                     // intro virtual followed by
                                     // length prefixed name of method
-} lfOneMethod;
+} lfOneMethod,lfOneMethodSt,lfOneMethodSz;
 
 
 //      subfield record for enumerate
@@ -2685,8 +2720,7 @@ typedef struct lfEnumerate {
     CV_fldattr_t    attr;       // access
     unsigned char   value[CV_ZEROLEN];    // variable length value field followed
                                 // by length prefixed name
-} lfEnumerate;
-
+} lfEnumerate,lfEnumerateSt,lfEnumerateSz;
 
 //  type record for nested (scoped) type definition
 
@@ -2701,7 +2735,7 @@ typedef struct lfNestType {
     _2BYTEPAD       pad0;       // internal padding, must be 0
     CV_typ_t        index;      // index of nested type definition
     unsigned char   Name[1];    // length prefixed type name
-} lfNestType;
+} lfNestType,lfNestTypeSt,lfNestTypeSz;
 
 //  type record for nested (scoped) type definition, with attributes
 //  new records for vC v5.0, no need to have 16-bit ti versions.
@@ -3181,7 +3215,7 @@ typedef struct REGSYM {
     CV_typ_t        typind;     // Type index or Metadata token
     unsigned short  reg;        // register enumerate
     unsigned char   name[1];    // Length-prefixed name
-} REGSYM;
+} REGSYM,REGSYMST;
 
 typedef struct ATTRREGSYM {
     unsigned short  reclen;     // Record length
@@ -3210,7 +3244,7 @@ typedef struct MANYREGSYM {
     unsigned char   reg[1];     // count register enumerates followed by
                                 // length-prefixed name.  Registers are
                                 // most significant first.
-} MANYREGSYM;
+} MANYREGSYM,MANYREGSYMST;
 
 typedef struct MANYREGSYM2 {
     unsigned short  reclen;     // Record length
@@ -3260,7 +3294,7 @@ typedef struct CONSTSYM {
     CV_typ_t        typind;     // Type index (containing enum if enumerate) or metadata token
     unsigned short  value;      // numeric leaf containing value
     unsigned char   name[CV_ZEROLEN];     // Length-prefixed name
-} CONSTSYM;
+} CONSTSYM,CONSTSYMST;
 
 
 typedef struct UDTSYM_16t {
@@ -3276,7 +3310,7 @@ typedef struct UDTSYM {
     unsigned short  rectyp;     // S_UDT | S_COBOLUDT
     CV_typ_t        typind;     // Type index
     unsigned char   name[1];    // Length-prefixed name
-} UDTSYM;
+} UDTSYM,UDTSYMST;
 
 typedef struct MANTYPREF {
     unsigned short  reclen;     // Record length
@@ -3576,7 +3610,7 @@ typedef struct BPRELSYM32 {
     CV_off32_t      off;        // BP-relative offset
     CV_typ_t        typind;     // Type index or Metadata token
     unsigned char   name[1];    // Length-prefixed name
-} BPRELSYM32;
+} BPRELSYM32,BPRELSYM32ST;
 
 typedef struct FRAMERELSYM {
     unsigned short  reclen;     // Record length
@@ -3633,7 +3667,7 @@ typedef struct DATASYM32 {
     CV_uoff32_t     off;
     unsigned short  seg;
     unsigned char   name[1];    // Length-prefixed name
-} DATASYM32;
+} DATASYM32,DATASYM32ST;
 
 typedef struct DATASYMHLSL {
     unsigned short  reclen;     // Record length
@@ -3733,7 +3767,7 @@ typedef struct PROCSYM32 {
     unsigned short  seg;
     CV_PROCFLAGS    flags;      // Proc flags
     unsigned char   name[1];    // Length-prefixed name
-} PROCSYM32;
+} PROCSYM32,PROCSYM32ST;
 
 typedef struct MANPROCSYM {
     unsigned short  reclen;     // Record length
@@ -3900,7 +3934,7 @@ typedef struct REGREL32 {
     CV_typ_t        typind;     // Type index or metadata token
     unsigned short  reg;        // register index for symbol
     unsigned char   name[1];    // Length-prefixed name
-} REGREL32;
+} REGREL32,REGREL32ST;
 
 typedef struct ATTRREGREL {
     unsigned short  reclen;     // Record length
@@ -3930,7 +3964,7 @@ typedef struct THREADSYM32 {
     CV_uoff32_t     off;        // offset into thread storage
     unsigned short  seg;        // segment of thread storage
     unsigned char   name[1];    // length prefixed name
-} THREADSYM32;
+} THREADSYM32,THREADSYM32ST;
 
 typedef struct SLINK32 {
     unsigned short  reclen;     // record length
@@ -3980,7 +4014,7 @@ typedef struct PROCSYMMIPS {
     unsigned char   retReg;     // Register return value is in
     unsigned char   frameReg;   // Frame pointer register
     unsigned char   name[1];    // Length-prefixed name
-} PROCSYMMIPS;
+} PROCSYMMIPS,PROCSYMMIPSST;
 
 typedef struct PROCSYMIA64 {
     unsigned short  reclen;     // Record length
