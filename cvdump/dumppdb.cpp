@@ -41,6 +41,8 @@ bool fUtf8Symbols;
 
 //#include "map_t.h"
 
+typedef ULONG LHASH;
+
 DWORD dwMachine;
 extern WORD CVDumpMachineType;
 
