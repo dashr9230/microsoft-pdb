@@ -1,2 +1,4 @@
 
+#define IMAGE_FILE_MACHINE_ARM64             0xAA64  // ARM64 Little-Endian
+
 typedef ANON_OBJECT_HEADER_BIGOBJ IMAGE_FILE_HEADER_EX;
