@@ -1,2 +1,7 @@
 
-const GUID EXTENDED_COFF_OBJ_GUID = { 0xD1BAA1C7, 0xBAEE, 0x4BA9, 0xAF, 0x20, 0xFA, 0xF6, 0x6A, 0xA4, 0xDC, 0xB8 };
+//------------------------------------------------------------------------------
+// ECOFF.H
+//------------------------------------------------------------------------------
+
+// {D1BAA1C7-BAEE-4ba9-AF20-FAF66AA4DCB8}
+DEFINE_GUID(EXTENDED_COFF_OBJ_GUID, 0xd1baa1c7, 0xbaee, 0x4ba9, 0xaf, 0x20, 0xfa, 0xf6, 0x6a, 0xa4, 0xdc, 0xb8);
