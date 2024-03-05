@@ -1,8 +1,25 @@
+/***********************************************************************
+* Microsoft (R) Debugging Information Dumper
+*
+* Copyright (c) Microsoft Corporation.  All rights reserved.
+*
+* File Comments:
+*
+*
+***********************************************************************/
 
 #include "cvdump.h"
 
-BYTE RecBuf[MAXTYPE];
+#ifndef UNALIGNED
+# if defined(_M_MRX000) || defined(_M_ALPHA)
+#  define UNALIGNED __unaligned
+# else
+#  define UNALIGNED
+# endif
+#endif
 
+
+BYTE RecBuf[MAXTYPE];
 
 void DumpCom()
 {
@@ -14,19 +31,74 @@ void DumpCom()
 
 void DumpModTypC7(size_t cbTyp)
 {
-	// TODO: DumpModTypC7
+    size_t cbEntry;
+    CV_typ_t usIndex = CV_FIRST_NONPRIM;
 
-	StdOutPrintf(L"DumpModTypC7: Not Implemented.");
+    while(cbTyp > 0) {
+        if (_read(exefile, &RecBuf, LNGTHSZ) != LNGTHSZ) {
+            Fatal(L"Types subsection wrong length");
+        }
+        cbEntry = *((UNALIGNED WORD *)(RecBuf));
+        if (cbEntry >= MAXTYPE - LNGTHSZ) {
+            Fatal(L"Type string too long");
+        }
+        if ((size_t)_read(exefile, RecBuf + LNGTHSZ, cbEntry) != cbEntry) {
+            Fatal(L"Types subsection wrong length");
+        }
+
+        if (fRaw) {
+            int i;
+            for (i=0; i < cbEntry+2; i+=2) {
+                StdOutPrintf(L"  %02x  %02x", RecBuf[i], RecBuf[i+1]);
+            }
+            StdOutPutc(L'\n');
+        }
+
+        usIndex = DumpTypRecC7(usIndex, cbEntry, RecBuf + LNGTHSZ, NULL, NULL);
+        cbTyp -= cbEntry + LNGTHSZ;
+    }
 }
 
 
 void DumpTyp()
 {
-	// TODO: DumpTyp
+    PMOD    pMod;
+    DWORD   ulSignature;
+    bool    fNeedsTitle = true;
+    char    name[256];
 
-	StdOutPrintf(L"DumpTyp: Not Implemented.");
+    for (pMod = ModList; pMod != NULL; pMod = pMod->next) {
+        if (((cbRec = pMod->TypeSize) != 0) &&
+            ((iModToList == 0) || ((WORD) iModToList == pMod->iMod))) {
+            if (fNeedsTitle) {
+                fNeedsTitle = false;
+                StdOutPuts(L"\n\n*** TYPES section\n");
+            }
+            _lseek(exefile, lfoBase + pMod->TypesAddr, SEEK_SET);
+            strcpy_s(name, pMod->ModName);
+            StdOutPrintf(L"%S\n", name);
+            cbRec = 4;
+            if (_read(exefile, &ulSignature, sizeof(DWORD)) != sizeof(DWORD)) {
+                Fatal(L"Can't Read Types subsection");
+            }
+            switch (ulSignature) {
+                case CV_SIGNATURE_C7:
+                case CV_SIGNATURE_C11:
+                case CV_SIGNATURE_C13:
+                    // Types are in C7 format
+                    DumpModTypC7(pMod->TypeSize - sizeof(DWORD));
+                    break;
+
+                default:
+                    // Types are in C6 format
+                    // Re-seek because first four bytes are not signature
+                    _lseek(exefile, lfoBase + pMod->TypesAddr, SEEK_SET);
+                    DumpModTypC6(pMod->TypeSize);
+                    break;
+            }
+        }
+    }
 }
-
 
 CV_typ_t DumpTypRecC7(CV_typ_t a, WORD b, BYTE* c, TPI* d, PDB* e)
 {
