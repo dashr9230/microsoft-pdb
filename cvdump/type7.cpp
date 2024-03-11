@@ -23,9 +23,78 @@ BYTE RecBuf[MAXTYPE];
 
 void DumpCom()
 {
-	// TODO: DumpCom
+    long            cnt;
+    long *          pTypeTbl;       // Array of offsets int types section
+    CV_typ_t        usIndex = CV_FIRST_NONPRIM;
+    size_t          cbEntry;        // Size of the type - length field
+    unsigned        base = 0;
+    unsigned        index;
+    unsigned        maxindex = 0;
+    unsigned        i;
+    OMFTypeFlags    flags;
+    size_t          seekcount = 0;
+    DWORD           lfoTypeBase = GlobalTypes.lfo;
+    WORD            cbMaxType = 0;
 
-	StdOutPrintf(L"DumpCom: Not Implemented.");
+    // Read compacted types table (array of offsets from Compacted.lfo)
+
+    _lseek(exefile, lfoBase + GlobalTypes.lfo, SEEK_SET);
+    if (Sig != SIG07) {
+        // the file was not packed by QCWIN 1.0 so the flag word is present
+
+        seekcount = sizeof(OMFTypeFlags);
+        _read(exefile, &flags, sizeof(OMFTypeFlags));
+    }
+    _read(exefile, &cnt, sizeof(long));
+
+    if ((pTypeTbl = (long *)malloc(INDEX_PER_READ * sizeof(DWORD))) == NULL) {
+        Fatal(L"Out of memory");
+    }
+
+    if (Sig == SIG09 || Sig == SIG11) {
+        lfoTypeBase += seekcount + sizeof(DWORD) * (cnt + 4);
+    }
+    StdOutPrintf(L"\n\n*** GLOBAL TYPES section (%d types)\n", cnt);
+
+    // Loop through the types dumping each one
+
+    for (index = 0; index < (unsigned)cnt; index++) {
+        if (index >= maxindex) {
+            _lseek(exefile, lfoBase + GlobalTypes.lfo +
+                (long)(maxindex + 4) * sizeof(DWORD) + seekcount, SEEK_SET);
+            i = min(INDEX_PER_READ, cnt - maxindex);
+            _read(exefile, pTypeTbl, i * sizeof(long));
+            base = maxindex;
+            maxindex += i;
+        }
+        _lseek(exefile, lfoBase + lfoTypeBase + pTypeTbl[index - base], SEEK_SET);
+        if (_read(exefile, &RecBuf, LNGTHSZ) != LNGTHSZ) {
+            Fatal(L"Types subsection wrong length");
+        }
+        cbEntry = *((UNALIGNED WORD *)(RecBuf));
+        if (cbEntry >= MAXTYPE - LNGTHSZ) {
+            Fatal(L"Type string too long");
+        }
+        if (_read(exefile, RecBuf + LNGTHSZ, cbEntry) != cbEntry) {
+            Fatal(L"Types subsection wrong length");
+        }
+
+        if (fRaw) {
+            int i;
+            for (i = 0; i<cbEntry + 2; i += 2) {
+                StdOutPrintf(L"  %02x  %02x", RecBuf[i], RecBuf[i+1]);
+            }
+            StdOutPutc(L'\n');
+        }
+
+        cbMaxType = max(cbMaxType, cbEntry + LNGTHSZ);
+
+        usIndex = DumpTypRecC7(usIndex, cbEntry, RecBuf + LNGTHSZ, NULL, NULL);
+    }
+
+    StdOutPrintf(L"Max Type Size = %d", cbMaxType);
+
+    free(pTypeTbl);
 }
 
 
