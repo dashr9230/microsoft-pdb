@@ -85,6 +85,7 @@
 #include "windows.h"
 
 #include <objidl.h>
+#include <winioctl.h>           // for FSCTL_GET_COMPRESSION & FSCTL_SET_COMPRESSION
 
 #include "ref.h"                // for COMRefPtr
 
@@ -119,6 +120,10 @@ using namespace pdb_internal;
 
 #ifdef max
 #undef max
+#endif
+
+#ifndef _countof
+#define _countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
 #endif
 
 #define MSF_IMP     // for declspec()
