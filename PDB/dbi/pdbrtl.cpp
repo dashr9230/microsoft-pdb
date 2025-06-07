@@ -52,10 +52,15 @@ RTL_PFN_INIT_DONE:
 FILE *  
 PDB_wfsopen(const wchar_t *wszPath, const wchar_t *wszMode, int shflag)
 {
-	PVOID OlValue;
-	BOOL  __Value;
+	PVOID OlValue=NULL;
+	BOOL  __Value=FALSE;
 	FILE* file=NULL;
-	
+
+	if (pfninitialized == Uninitialized)
+	{
+		RTL_PFN_INIT();
+	}
+
 	if (wszPath && *wszPath)
 	{
 		if (Wow64DisableWow64FsRedirection != NULL)
