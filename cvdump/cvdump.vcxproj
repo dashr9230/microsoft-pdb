@@ -275,6 +275,7 @@
     <ClInclude Include="..\PDB\msf\istream.h" />
     <ClInclude Include="arm64regs.h" />
     <ClInclude Include="armregs.h" />
+    <ClInclude Include="corhdr.h" />
     <ClInclude Include="cvdump.h" />
     <ClInclude Include="cvtdef.h" />
     <ClInclude Include="debsym.h" />

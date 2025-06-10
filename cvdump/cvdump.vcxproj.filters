@@ -353,6 +353,7 @@
     <ClInclude Include="..\langapi\include\vcver.h">
       <Filter>langapi\include</Filter>
     </ClInclude>
+    <ClInclude Include="corhdr.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="langapi">
