@@ -169,6 +169,31 @@ void DumpTyp()
     }
 }
 
+
+// DumpHex ()
+//      Prints bytes from buffer in hex format.
+
+void DumpHex(BYTE* pBytes, USHORT usCount)
+{
+    int num_on_line = 0;
+
+    StdOutPuts(L"\t");
+
+    while (usCount--)
+    {
+        StdOutPrintf(L" 0x%02x", *pBytes++);
+
+        if (!(++num_on_line & 8))
+        {
+            if (usCount)
+            {
+                StdOutPuts(L"\n\t");
+            }
+        }
+    }
+}
+
+
 CV_typ_t DumpTypRecC7(CV_typ_t typ, WORD cbLen, BYTE *pRec, TPI *ptpi, PDB *ppdb)
 {
     // TODO: DumpTypRecC7
