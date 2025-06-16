@@ -169,13 +169,13 @@ void DumpTyp()
     }
 }
 
-CV_typ_t DumpTypRecC7(CV_typ_t a, WORD b, BYTE* c, TPI* d, PDB* e)
+CV_typ_t DumpTypRecC7(CV_typ_t typ, WORD cbLen, BYTE *pRec, TPI *ptpi, PDB *ppdb)
 {
-	// TODO: DumpTypRecC7
+    // TODO: DumpTypRecC7
 
-	StdOutPuts(L"DumpTypRecC7: Not implemented.");
+    StdOutPuts(L"DumpTypRecC7: Not implemented.");
 
-	return 0;
+    return 0;
 }
 
 const wchar_t * const C7CallTyps[] = {
