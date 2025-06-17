@@ -21,6 +21,17 @@
 
 BYTE RecBuf[MAXTYPE];
 
+const wchar_t * const XlateC7PtrMode[] = {
+    L"Pointer",
+    L"L-value Reference",
+    L"Pointer to member",
+    L"Pointer to member function",
+    L"R-value Reference",
+    L"???",
+    L"???",
+    L"???",
+};
+
 // see enum CV_access_e
 const wchar_t * const C7AccessStrings[] = {
     L"none",
