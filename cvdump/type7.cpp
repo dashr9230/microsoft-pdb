@@ -194,6 +194,14 @@ void DumpHex(BYTE* pBytes, USHORT usCount)
 }
 
 
+void PrintFAttr()
+{
+    // TODO: .text:0044C520 PrintFAttr
+
+    StdOutPuts(L"PrintFAttr: Not implemented.");
+}
+
+
 CV_typ_t DumpTypRecC7(CV_typ_t typ, WORD cbLen, BYTE *pRec, TPI *ptpi, PDB *ppdb)
 {
     // TODO: DumpTypRecC7
