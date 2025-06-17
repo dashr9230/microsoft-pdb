@@ -21,6 +21,15 @@
 
 BYTE RecBuf[MAXTYPE];
 
+// see enum CV_access_e
+const wchar_t * const C7AccessStrings[] = {
+    L"none",
+    L"private",                     // CV_private
+    L"protected",                   // CV_protected
+    L"public"                       // CV_public
+};
+
+
 void DumpCom()
 {
     long            cnt;
@@ -211,6 +220,8 @@ CV_typ_t DumpTypRecC7(CV_typ_t typ, WORD cbLen, BYTE *pRec, TPI *ptpi, PDB *ppdb
     return 0;
 }
 
+
+// see enum CV_call_e
 const wchar_t * const C7CallTyps[] = {
     L"C Near",                      // CV_CALL_NEAR_C
     L"C Far",                       // CV_CALL_FAR_C
