@@ -8,6 +8,8 @@
 *
 ***********************************************************************/
 
+#include <windows.h>
+
 #include "cvdump.h"
 
 #ifndef UNALIGNED
@@ -18,6 +20,7 @@
 # endif
 #endif
 
+#define INDEX_PER_READ 0x1000
 
 BYTE RecBuf[MAXTYPE];
 
