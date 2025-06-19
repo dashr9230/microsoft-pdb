@@ -22,6 +22,8 @@
 
 #define INDEX_PER_READ 0x1000
 
+BYTE* DumpVCount(WORD*, BYTE*);
+
 BYTE RecBuf[MAXTYPE];
 
 const wchar_t * const XlateC7PtrMode[] = {
@@ -232,6 +234,24 @@ CV_typ_t DumpTypRecC7(CV_typ_t typ, WORD cbLen, BYTE *pRec, TPI *ptpi, PDB *ppdb
     StdOutPuts(L"DumpTypRecC7: Not implemented.");
 
     return 0;
+}
+
+BYTE* DumpCobOccurs(WORD* pReclen, BYTE* pc)
+{
+    StdOutPrintf(L" OCCURS (0x%02x) ", *pc);
+    if ((*pc & 0x10) == 0) {
+        StdOutPrintf(L" stride - 1 = %d", *pc & 0x0f);
+        pc++;
+        *pReclen -= 1;
+    }
+    else {
+        StdOutPuts(L" extended stride - 1 = ");
+        pc = DumpVCount(pReclen, pc);
+    }
+    StdOutPuts(L" maximum bound = ");
+    pc = DumpVCount(pReclen, pc);
+    StdOutPuts(L"\n\t");
+    return (pc);
 }
 
 BYTE* DumpVCount(WORD* pReclen, BYTE* pc)
