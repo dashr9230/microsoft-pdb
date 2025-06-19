@@ -234,6 +234,49 @@ CV_typ_t DumpTypRecC7(CV_typ_t typ, WORD cbLen, BYTE *pRec, TPI *ptpi, PDB *ppdb
     return 0;
 }
 
+BYTE* DumpVCount(WORD* pReclen, BYTE* pc)
+{
+    BYTE ch;
+    BYTE ch2;
+    WORD ush;
+    long lng;
+
+    ch = *pc++;
+    *pReclen--;
+
+    if ((ch & 0x80) == 0) {
+        StdOutPrintf(L"%d", ch);
+    }
+    else if ((ch & 0xc0) == 0x80) {
+        ch2 = *pc++;
+        *pReclen--;
+        ush = ((ch & 0x37) << 8) | ch2;
+        StdOutPrintf(L"%d", ush);
+    }
+    else if ((ch & 0xf0) == 0xc0) {
+        ch2 = *pc++;
+        *pReclen--;
+        ush = *(USHORT *)pc;
+        pc += sizeof(USHORT);
+        pReclen -= sizeof(USHORT);
+        lng = (ch & 0x1f << 24) | ch2 << 16 | ush;
+        StdOutPrintf(L"%ld", lng);
+    }
+    else if ((ch & 0xf0) == 0xf0) {
+        ch2 = *pc++;
+        *pReclen--;
+        ush = *(USHORT *)pc;
+        pc += sizeof(USHORT);
+        pReclen -= sizeof(USHORT);
+        lng = (ch & 0x1f << 24) | ch2 << 16 | ush;
+        StdOutPrintf(L"%d", lng);
+    }
+    else {
+        StdOutPuts(L"unknown vcount format");
+    }
+    return (pc);
+}
+
 
 // see enum CV_call_e
 const wchar_t * const C7CallTyps[] = {
