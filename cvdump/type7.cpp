@@ -236,6 +236,19 @@ CV_typ_t DumpTypRecC7(CV_typ_t typ, WORD cbLen, BYTE *pRec, TPI *ptpi, PDB *ppdb
     return 0;
 }
 
+BYTE* DumpCobLinkage(WORD* pReclen, BYTE* pc)
+{
+    StdOutPuts(L"Linkage");
+    if (*pc & 0x01) {
+        pc = DumpVCount(pReclen, pc);
+    }
+    else {
+        pc++;
+        *pReclen -= 1;
+    }
+    return (pc);
+}
+
 BYTE* DumpCobOccurs(WORD* pReclen, BYTE* pc)
 {
     StdOutPrintf(L" OCCURS (0x%02x) ", *pc);
