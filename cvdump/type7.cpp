@@ -22,7 +22,10 @@
 
 #define INDEX_PER_READ 0x1000
 
+BYTE* DumpCobLinkage(WORD*, BYTE*);
+BYTE* DumpCobOccurs(WORD*, BYTE*);
 BYTE* DumpVCount(WORD*, BYTE*);
+BYTE* DumpCobItem(WORD*, BYTE*);
 
 BYTE RecBuf[MAXTYPE];
 
@@ -234,6 +237,41 @@ CV_typ_t DumpTypRecC7(CV_typ_t typ, WORD cbLen, BYTE *pRec, TPI *ptpi, PDB *ppdb
     StdOutPuts(L"DumpTypRecC7: Not implemented.");
 
     return 0;
+}
+
+BYTE* DumpCobol(WORD* pReclen, BYTE* pc)
+{
+    BYTE level;
+
+    level = *pc++;
+    *pReclen--;
+
+    StdOutPrintf(L"\tLevel = %2d ", level & 0x7f);
+    if (level & 0x80) {
+        StdOutPuts(L"(Group) ");
+    }
+loop:
+    // check next byte of type string
+
+    if (*pReclen > 0) {
+        if ((*pc & 0xfe) == 0xc0) {
+            // output linkage information byte
+
+            pc = DumpCobLinkage(pReclen, pc);
+            goto loop;
+        }
+        else if ((*pc & 0xe0) == 0xe0) {
+            // output OCCURS subscript information
+
+            pc = DumpCobOccurs(pReclen, pc);
+            goto loop;
+        }
+        else {
+            pc = DumpCobItem(pReclen, pc);
+        }
+    }
+    StdOutPutc(L'\n');
+    return (pc);
 }
 
 BYTE* DumpCobLinkage(WORD* pReclen, BYTE* pc)
