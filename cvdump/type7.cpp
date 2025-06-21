@@ -310,6 +310,22 @@ BYTE* DumpVCount(WORD* pReclen, BYTE* pc)
     return (pc);
 }
 
+BYTE* DumpCobItem(WORD* pReclen, BYTE* pc)
+{
+    /*BYTE ch;
+
+    ch = *pc++;
+    if ((ch & 0x80) == 0) {
+    }
+    else {
+
+    }*/
+
+    // TODO: DumpCobItem
+    StdOutPuts(L"DumpCobItem: Not implemented.");
+
+    return (pc);
+}
 
 // see enum CV_call_e
 const wchar_t * const C7CallTyps[] = {
