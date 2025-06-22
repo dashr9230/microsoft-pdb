@@ -417,20 +417,90 @@ BYTE* DumpVCount(WORD* pReclen, BYTE* pc)
     return (pc);
 }
 
+extern const wchar_t* const display[];
+extern const wchar_t* const notdisplay[];
+
 BYTE* DumpCobItem(WORD* pReclen, BYTE* pc)
 {
-    /*BYTE ch;
+    BYTE ch;
+    BYTE ch2;
+    WORD f;
+    short size;
 
     ch = *pc++;
+    pReclen--;
     if ((ch & 0x80) == 0) {
+        // dump numeric
+
+        ch2 = *pc++;
+        *pReclen--;
+        StdOutPuts(L" numeric ");
+        if ((ch & 0x40) == 0x40) {
+            StdOutPuts(L"not ");
+        }
+        StdOutPuts(L"DISPLAY ");
+        if ((ch & 0x20) == 0x20) {
+            StdOutPuts(L"not LITERAL ");
+        }
+        else {
+            StdOutPrintf(L"LITERAL = %0x02x", *pc++);
+            *pReclen--;
+        }
+        if ((ch2 & 0x80) == 0x80) {
+            StdOutPuts(L"not ");
+        }
+        StdOutPuts(L"signed\n");
+        f = (ch2 & 0x60) >> 5;
+        if (ch & 0x20) {
+            StdOutPrintf(L"%s", display[f]);
+        }
+        else {
+            StdOutPrintf(L"%s", notdisplay[f]);
+        }
+        StdOutPrintf(L"N1 = 0x%02x, N2 = 0x%02x", ch & 0x1f, ch2 & 0x1f);
     }
     else {
+        // dump alphanumeric/alphabetic
 
-    }*/
+        if ((ch & 0x04) == 0x04) {
+            StdOutPuts(L" alphabetic ");
+        }
+        else {
+            StdOutPuts(L" alphanumeric ");
+        }
+        if ((ch & 0x20) == 0x20) {
+            StdOutPuts(L"not ");
+        }
+        StdOutPuts(L"LITERAL ");
+        if ((ch & 0x10) == 0x10) {
+            StdOutPuts(L"JUSTIFIED ");
+        }
+        if ((ch & 0x08) == 0) {
+            // extended size is zero, this and next byte contains size
 
-    // TODO: DumpCobItem
-    StdOutPuts(L"DumpCobItem: Not implemented.");
+            ch2 = *pc++;
+            *pReclen--;
+            size = (ch & 0x03) << 8 | ch2;
+            StdOutPrintf(L"size - 1 = %d ", size);
 
+            // if not extended size and literal, then display string
+            if ((ch & 0x20) == 0) {
+                StdOutPuts(L"\n\t literal = ");
+                while (size-- >= 0) {
+                    ch2 = *pc++;
+                    *pReclen--;
+                    StdOutPrintf(L"%C", ch2);
+                }
+            }
+        }
+        else {
+            // extended size is true, read the size in vcount format.
+            // I do not believe a literal can follow if extended size
+            // true
+            StdOutPuts(L"size - 1 = ");
+            pc = DumpVCount(pReclen, pc);
+        }
+    }
     return (pc);
 }
 
