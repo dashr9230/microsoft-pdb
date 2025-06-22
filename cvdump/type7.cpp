@@ -303,6 +303,46 @@ loop:
     return (pc);
 }
 
+BYTE* DumpCobL0(WORD len, BYTE* pc)
+{
+    WORD NameAlg;
+    WORD i = 0;
+
+    StdOutPuts(L" Level = 0 ");
+    if (len == 257) {
+        StdOutPuts(L"dump of cobol compiler flags :");
+
+        len--;
+        pc++;
+        while (i < len) {
+            if ((i % 16) == 0) {
+                StdOutPrintf(L"\n\t%02x  ", i);
+            }
+            StdOutPrintf(L" %02x", *pc++);
+            if ((i & 0x0f) == 7) {
+                StdOutPuts(L" ");
+            }
+            i++;
+        }
+    }
+    else {
+        pc++;
+        NameAlg = *(WORD *)pc;
+        pc += 2;
+        i = *pc++;
+        if (NameAlg == 0) {
+            StdOutPuts(L"name algorithm is decimal with ");
+        }
+        else {
+            StdOutPuts(L"name algorithm - unknown ");
+        }
+        StdOutPrintf(L"root = \"%*S\"", i, pc);
+        pc += i;
+    }
+    StdOutPutc(L'\n');
+    return (pc);
+}
+
 BYTE* DumpCobLinkage(WORD* pReclen, BYTE* pc)
 {
     StdOutPuts(L"Linkage");
