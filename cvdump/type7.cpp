@@ -40,6 +40,16 @@ const wchar_t * const XlateC7PtrMode[] = {
     L"???",
 };
 
+const wchar_t * const C7MPropStrings[] = {
+    L"VANILLA",
+    L"VIRTUAL",
+    L"STATIC",
+    L"FRIEND",
+    L"INTRODUCING VIRTUAL",
+    L"PURE VIRTUAL",
+    L"PURE INTRO",
+};
+
 // see enum CV_access_e
 const wchar_t * const C7AccessStrings[] = {
     L"none",
@@ -222,11 +232,30 @@ void DumpHex(BYTE* pBytes, USHORT usCount)
 }
 
 
-void PrintFAttr()
+void PrintFAttr(bool a1, CV_fldattr_t attr)
 {
-    // TODO: .text:0044C520 PrintFAttr
+    StdOutPrintf(L"%s, ", C7AccessStrings[attr.access]);
 
-    StdOutPuts(L"PrintFAttr: Not implemented.");
+    if (a1)
+    {
+        StdOutPrintf(L"%s, ", C7MPropStrings[attr.mprop]);
+        if (attr.pseudo) {
+            StdOutPuts(L"(pseudo), ");
+        }
+        if (attr.compgenx) {
+            StdOutPuts(L"(compgenx), ");
+        }
+        if (attr.sealed) {
+            StdOutPuts(L"(sealed), ");
+        }
+    }
+
+    if (attr.noinherit) {
+        StdOutPuts(L"(noinherit), ");
+    }
+    if (attr.noconstruct) {
+        StdOutPuts(L"(noconstruct), ");
+    }
 }
 
 
