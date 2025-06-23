@@ -44,52 +44,157 @@ size_t UTF8ToUnicode(LPCSTR lpSrcStr, LPWSTR lpDestStr, size_t cchDest)
 
 size_t UTF8ToUnicodeCch(LPCSTR lpSrcStr, size_t cchSrc, LPWSTR lpDestStr, size_t cchDest)
 {
-	unsigned char     s;
-	unsigned char*    src = (unsigned char*)lpSrcStr;
-	unsigned short    w;
-	unsigned short*   dst = (unsigned short*)lpDestStr;
-	size_t cb,nb,cx;
-	__debugbreak();
-	for (cb=0,cx=(cchSrc>cchDest)?cchDest:cchSrc ; *dst=0,cb < cx;)
-	{
-		s  = *src;
-		nb = aiByteCountForLeadNibble[s>>4];
-		if (cb + nb > cx)
-			break;
-		switch (nb)
-		{
-			case 1:
-				*dst++ = (short)*src++;
-				break;
-			case 3:
-				w      = (short)*src++;
-				//through
-			case 2:
-				w     |= (short)(*src++ & 0x3f) << 6;
-				w     |= (short)(*src++ & 0x3f)     ;
-				
-				*dst++ = __U(w);
-				break;
-			case 4:
-				w      = (short)(*src++ & 0x07) << 2;
-				w     |= (short)(*src   & 0x30) >> 4;
-				w      = (short)(w      -    1) << 6;
-				w     |= (short)(*src++ & 0x0f) << 2;
-				w     |= (short)(*src   & 0x30) >> 4;
-				
-				//0xd800 + off
-				*dst++ = HIGH_SURROGATE_START + w; 
-				
-				w      = (short)(*src++ & 0x0f) << 6;
-				w     |= (short)(*src++ & 0x3f)     ;
-				
-				//0xdc00 + off
-				*dst++ = LOW_SURROGATE_START  + w;
-				break;
-		}
-		cb  += nb;
-	}
-	return cb;
+    int nTB = 0;                   // # trail bytes to follow
+    size_t cchWC = 0;              // # of Unicode code points generated
+    LPCSTR pUTF8 = lpSrcStr;
+    DWORD dwSurrogateChar = 0;         // Full surrogate char
+    BOOL bSurrogatePair = FALSE;   // Indicate we'r collecting a surrogate pair
+    char UTF8;
+
+    while ((cchSrc--) && ((cchDest == 0) || (cchWC < cchDest)))
+    {
+        //
+        //  See if there are any trail bytes.
+        //
+        if (BIT7(*pUTF8) == 0)
+        {
+            //
+            //  Found ASCII.
+            //
+            if (cchDest)
+            {
+                lpDestStr[cchWC] = (WCHAR)*pUTF8;
+            }
+            bSurrogatePair = FALSE;
+            cchWC++;
+        }
+        else if (BIT6(*pUTF8) == 0)
+        {
+            //
+            //  Found a trail byte.
+            //  Note : Ignore the trail byte if there was no lead byte.
+            //
+            if (nTB != 0)
+            {
+                //
+                //  Decrement the trail byte counter.
+                //
+                nTB--;
+
+                if (bSurrogatePair)
+                {
+                    dwSurrogateChar <<= 6;
+                    dwSurrogateChar |= LOWER_6_BIT(*pUTF8);
+
+                    if (nTB == 0)
+                    {
+                        if (cchDest)
+                        {
+                            if ((cchWC + 1) < cchDest)
+                            {
+                                lpDestStr[cchWC] = (WCHAR)
+                                    (((dwSurrogateChar - 0x10000) >> 10) + HIGH_SURROGATE_START);
+
+                                lpDestStr[cchWC + 1] = (WCHAR)
+                                    ((dwSurrogateChar - 0x10000) % 0x400 + LOW_SURROGATE_START);
+                            }
+                        }
+
+                        cchWC += 2;
+                        bSurrogatePair = FALSE;
+                    }
+                }
+                else
+                {
+                    //
+                    //  Make room for the trail byte and add the trail byte
+                    //  value.
+                    //
+                    if (cchDest)
+                    {
+                        lpDestStr[cchWC] <<= 6;
+                        lpDestStr[cchWC] |= LOWER_6_BIT(*pUTF8);
+                    }
+
+                    if (nTB == 0)
+                    {
+                        //
+                        //  End of sequence.  Advance the output counter.
+                        //
+                        cchWC++;
+                    }
+                }
+            }
+            else
+            {
+                // error - not expecting a trail byte
+                bSurrogatePair = FALSE;
+            }
+        }
+        else
+        {
+            //
+            //  Found a lead byte.
+            //
+            if (nTB > 0)
+            {
+                //
+                //  Error - previous sequence not finished.
+                //
+                nTB = 0;
+                bSurrogatePair = FALSE;
+                cchWC++;
+            }
+            else
+            {
+                //
+                //  Calculate the number of bytes to follow.
+                //  Look for the first 0 from left to right.
+                //
+                UTF8 = *pUTF8;
+                while (BIT7(UTF8) != 0)
+                {
+                    UTF8 <<= 1;
+                    nTB++;
+                }
+
+                //
+                // If this is a surrogate unicode pair
+                //
+                if (nTB == 4)
+                {
+                    dwSurrogateChar = UTF8 >> nTB;
+                    bSurrogatePair = TRUE;
+                }
+
+                //
+                //  Store the value from the first byte and decrement
+                //  the number of bytes to follow.
+                //
+                if (cchDest)
+                {
+                    lpDestStr[cchWC] = UTF8 >> nTB;
+                }
+                nTB--;
+            }
+        }
+
+        pUTF8++;
+    }
+
+    //
+    //  Make sure the destination buffer was large enough.
+    //
+    if (cchDest && cchSrc != (size_t)-1)
+    {
+        SetLastError(ERROR_INSUFFICIENT_BUFFER);
+        return 0;
+    }
+
+    //
+    //  Return the number of Unicode characters written.
+    //
+    return cchWC;
 }
 
 size_t UnicodeToUTF8(LPCWSTR lpSrcStr, LPSTR lpDestStr, size_t cchDest)
