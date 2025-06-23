@@ -38,7 +38,6 @@ inline short __U(short w)
 
 size_t UTF8ToUnicode(LPCSTR lpSrcStr, LPWSTR lpDestStr, size_t cchDest)
 {
-	__debugbreak();
 	return UTF8ToUnicodeCch(lpSrcStr, strlen(lpSrcStr) + 1, lpDestStr, cchDest);
 }
 
